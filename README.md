@@ -5,6 +5,7 @@ Express and MongoDB REST API for StudioSpace, a marketplace for creative studios
 ## Features
 
 - User registration and login with bcrypt and HTTPOnly JWT cookies
+- Google sign-in with verified Google ID tokens and HTTPOnly application sessions
 - Studio listing CRUD with host ownership checks
 - Booking requests with confirmed-slot overlap checks
 - Studio reviews with one-review-per-creator enforcement and live average ratings
@@ -15,7 +16,7 @@ Express and MongoDB REST API for StudioSpace, a marketplace for creative studios
 ## Local setup
 
 1. Copy `.env.example` to `.env`.
-2. Set `MONGODB_URI` and a strong `JWT_SECRET` in `.env`.
+2. Set `MONGODB_URI`, a strong `JWT_SECRET`, and `GOOGLE_CLIENT_ID` in `.env`. Use the matching web OAuth client ID for `VITE_GOOGLE_CLIENT_ID` in the client `.env`; authorize your development and production web origins in Google Cloud.
 3. Run `npm install`.
 4. Run `npm run dev`.
 5. To add six sample listings without replacing existing data, run `npm run seed:studios`.
