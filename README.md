@@ -16,6 +16,7 @@ Express and MongoDB REST API for StudioSpace, a marketplace for creative studios
 2. Set `MONGODB_URI` and a strong `JWT_SECRET` in `.env`.
 3. Run `npm install`.
 4. Run `npm run dev`.
-5. The API runs at `http://localhost:5000` by default.
+5. To add six sample listings without replacing existing data, run `npm run seed:studios`.
+6. The API runs at `http://localhost:5000` by default.
 
 Never commit `.env`; it contains private credentials.
