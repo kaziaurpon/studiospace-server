@@ -19,4 +19,4 @@ Express and MongoDB REST API for StudioSpace, a marketplace for creative studios
 5. To add six sample listings without replacing existing data, run `npm run seed:studios`.
 6. The API runs at `http://localhost:5000` by default.
 
-Never commit `.env`; it contains private credentials.
+Never commit `.env`; it contains private credentials. In production, the JWT cookie uses `SameSite=None; Secure` so the separate client/API origins can send authenticated requests over HTTPS.
