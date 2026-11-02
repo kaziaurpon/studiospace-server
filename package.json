@@ -1,0 +1,1 @@
+{"name":"studiospace-server","version":"1.0.0","type":"module","scripts":{"dev":"node --watch index.js","start":"node index.js"},"dependencies":{"bcryptjs":"latest","cookie-parser":"latest","cors":"latest","dotenv":"latest","express":"latest","jsonwebtoken":"latest","mongodb":"latest"}}
