@@ -32,12 +32,26 @@ Express and MongoDB API for [StudioSpace](https://studiospace-client-seven.verce
 From the server directory:
 
 ```bash
-cp .env.example .env
+touch .env
 npm install
 npm run dev
 ```
 
-Configure `.env` before starting the API:
+Create `.env` and add the settings below. Replace the MongoDB URI and JWT secret with your own values:
+
+```env
+PORT=5001
+MONGODB_URI=mongodb://127.0.0.1:27017
+MONGODB_DB=studiospace
+JWT_SECRET=replace-with-a-random-secret-of-at-least-32-characters
+CLIENT_URL=http://localhost:5173
+NODE_ENV=development
+GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+```
+
+Google sign-in is optional. Configure `GOOGLE_CLIENT_ID` only when enabling it.
+
+Environment variables:
 
 | Variable | Purpose |
 | --- | --- |
