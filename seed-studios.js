@@ -35,7 +35,7 @@ const samples = [
     securityDeposit: 100,
     capacity: 6,
     location: 'East London, UK',
-    image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=85',
+    image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1200&q=85',
     amenities: ['Studio microphones', 'Soundproofing', '4K cameras', 'Lounge'],
     overview: 'An acoustically treated recording suite for conversations, interviews, and shows worth hearing.',
     hostName: 'Alex Morgan',
