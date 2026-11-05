@@ -1,43 +1,46 @@
 # StudioSpace API
 
-Express and MongoDB API for [StudioSpace](https://studiospace-client-seven.vercel.app), a marketplace for creative studios and production spaces.
+Express and MongoDB backend for [StudioSpace](https://studiospace-client-seven.vercel.app), a peer-to-peer marketplace for creative studios and production spaces.
 
-## Features
+**Client application:** [studiospace-client-seven.vercel.app](https://studiospace-client-seven.vercel.app)
+**API repository:** [github.com/kaziaurpon/studiospace-server](https://github.com/kaziaurpon/studiospace-server)
+**Client repository:** [github.com/kaziaurpon/studiospace-client](https://github.com/kaziaurpon/studiospace-client)
 
-- Email/password registration and login with bcrypt-hashed passwords.
-- Google Identity Services sign-in with verified ID tokens.
-- JWT sessions in HTTPOnly cookies; private routes return `401` without a valid session.
-- Studio listing CRUD with server-side host ownership checks.
-- Booking requests, host confirmation/completion, cancellation, and overlap checks for confirmed reservations.
-- Per-studio/date booking locks to serialize reservation checks and host confirmations.
-- Studio reviews with one-review-per-creator enforcement and calculated average ratings.
-- MongoDB-backed saved-studio wishlists and newsletter subscriptions.
-- Origin validation for state-changing requests and production validation for `JWT_SECRET`.
+## Capabilities
 
-## Technology
+- Email/password authentication with bcrypt password hashing and Google ID-token verification.
+- JWT sessions stored in HTTPOnly cookies; protected endpoints reject unauthenticated requests.
+- Studio create, read, update, and delete operations, with ownership checks for host mutations.
+- Booking requests with capacity and time validation, plus confirmed-booking overlap protection.
+- Host actions to confirm or complete reservations; creators can cancel pending requests.
+- Per-studio/date booking locks to serialize conflict checks and host confirmations.
+- Studio reviews with one-review-per-creator enforcement and calculated rating summaries.
+- MongoDB-backed wishlists and newsletter subscriptions.
+- Origin validation for state-changing requests and production validation for the JWT secret.
 
-- Node.js and Express.js
+## Stack
+
+- Node.js with Express.js
 - MongoDB Node.js driver
-- JWT, bcryptjs, and cookie-parser
-- Google Auth Library for Google ID-token verification
+- JWT (`jsonwebtoken`), `bcryptjs`, and `cookie-parser`
+- Google Auth Library for Google sign-in verification
+- Render Blueprint configuration in `render.yaml`
 
 ## Requirements
 
 - Node.js and npm
-- A MongoDB instance, local or MongoDB Atlas
-- A Google Web OAuth client ID only if Google sign-in is needed
+- MongoDB locally or a MongoDB Atlas database
+- A Google Web OAuth client ID only if Google sign-in is required
 
-## Run locally
+## Local development
 
-From the server directory:
+Create a local `.env` file in the server repository:
 
 ```bash
 touch .env
-npm install
-npm run dev
 ```
 
-Create `.env` and add the settings below. Replace the MongoDB URI and JWT secret with your own values:
+Add the settings below, replacing the database connection string and JWT secret with your own values:
 
 ```env
 PORT=5001
@@ -49,61 +52,69 @@ NODE_ENV=development
 GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
 ```
 
-Google sign-in is optional. Configure `GOOGLE_CLIENT_ID` only when enabling it.
+Install dependencies and run the API in watch mode:
 
-Environment variables:
+```bash
+npm install
+npm run dev
+```
+
+The API listens on `http://localhost:5001` by default. The health endpoint is `GET /api/health`. Keep `.env` private; it is excluded from Git.
+
+## Environment variables
 
 | Variable | Purpose |
 | --- | --- |
 | `MONGODB_URI` | MongoDB connection string |
 | `MONGODB_DB` | Database name; defaults to `studiospace` |
-| `JWT_SECRET` | Session signing secret; use a random value of at least 32 characters |
-| `CLIENT_URL` | Exact allowed client origin, e.g. `http://localhost:5173` |
-| `GOOGLE_CLIENT_ID` | Google Web OAuth client ID; required for Google sign-in |
-| `PORT` | API port; defaults to `5001` |
-| `NODE_ENV` | Set to `production` when deployed |
+| `JWT_SECRET` | Session signing secret; use a random value at least 32 characters long |
+| `CLIENT_URL` | Exact client origin allowed by CORS and origin validation |
+| `GOOGLE_CLIENT_ID` | Google Web OAuth client ID; optional unless Google sign-in is enabled |
+| `PORT` | HTTP port; defaults to `5001` |
+| `NODE_ENV` | Set to `production` on the deployed API |
 
-The API is available at `http://localhost:5001` by default. Keep `.env` private and never commit credentials.
+## API reference
 
-## Main API routes
+All routes use the `/api` prefix.
 
-| Method | Route | Access | Purpose |
+| Method | Endpoint | Access | Description |
 | --- | --- | --- | --- |
-| `GET` | `/api/health` | Public | Health check |
-| `POST` | `/api/auth/register` | Public | Create an account |
-| `POST` | `/api/auth/login` | Public | Sign in and set the HTTPOnly session cookie |
-| `POST` | `/api/auth/google` | Public | Verify Google sign-in and set a session cookie |
-| `POST` | `/api/auth/logout` | Public | Clear the session cookie |
-| `GET` | `/api/auth/me` | Signed in | Return the current user |
-| `GET` | `/api/studios` | Public | List/search studios; supports `category`, `q`, and `limit` |
-| `GET` | `/api/studios/:id` | Public | Get studio details |
-| `POST` | `/api/studios` | Signed in | Create a studio owned by the current user |
-| `PUT` | `/api/studios/:id` | Owner | Update a studio listing |
-| `DELETE` | `/api/studios/:id` | Owner | Delete a studio listing |
-| `POST` | `/api/bookings` | Signed in | Create a pending booking request |
-| `GET` | `/api/bookings` | Signed in | List the current user's bookings |
-| `GET` | `/api/host/bookings` | Signed in | List requests for the current host |
-| `PATCH` | `/api/bookings/:id` | Owner/host | Cancel, confirm, or complete a booking, subject to ownership and status rules |
-| `GET` | `/api/studios/:id/reviews` | Public | List reviews and rating summary |
-| `POST` | `/api/studios/:id/reviews` | Signed in | Submit a review |
-| `GET` / `POST` | `/api/wishlist` | Signed in | Read or toggle saved studios |
-| `POST` | `/api/newsletter` | Public | Subscribe an email address |
+| `GET` | `/health` | Public | API health check |
+| `POST` | `/auth/register` | Public | Create an account |
+| `POST` | `/auth/login` | Public | Sign in and set the session cookie |
+| `POST` | `/auth/google` | Public | Verify Google credentials and sign in |
+| `POST` | `/auth/logout` | Public | Clear the session cookie |
+| `GET` | `/auth/me` | Authenticated | Return the current user |
+| `PATCH` | `/auth/profile` | Authenticated | Update profile details |
+| `GET` | `/studios` | Public | List studios; supports `category`, `q`, and `limit` query parameters |
+| `GET` | `/studios/:id` | Public | Get studio details |
+| `POST` | `/studios` | Authenticated | Create a listing for the current host |
+| `PUT` | `/studios/:id` | Listing owner | Update a listing |
+| `DELETE` | `/studios/:id` | Listing owner | Delete a listing |
+| `GET` | `/studios/:id/reviews` | Public | Get reviews and rating summary |
+| `POST` | `/studios/:id/reviews` | Authenticated | Add a review |
+| `POST` | `/bookings` | Authenticated | Create a pending booking request |
+| `GET` | `/bookings` | Authenticated | List the current creator’s bookings |
+| `GET` | `/host/bookings` | Authenticated host | List requests for the current host |
+| `PATCH` | `/bookings/:id` | Booking owner or host | Cancel, confirm, or complete a booking subject to authorization and status rules |
+| `GET`, `POST` | `/wishlist` | Authenticated | List or toggle saved studios |
+| `POST` | `/newsletter` | Public | Subscribe an email address |
 
-State-changing browser requests must come from the configured `CLIENT_URL`. Production cookies use `HttpOnly`, `Secure`, and `SameSite=None` for the separately hosted client and API.
+## Sample listings
 
-## Sample studio data
-
-Add six sample listings without replacing existing listings:
+Insert the sample studios without replacing existing records:
 
 ```bash
 npm run seed:studios
 ```
 
-## Deploy on Render
+## Deployment
 
-The repository includes `render.yaml` for a Render Blueprint deployment. Set `MONGODB_URI`, `CLIENT_URL`, and `GOOGLE_CLIENT_ID` in the Render service settings; configure a strong `JWT_SECRET` of at least 32 characters. Render provides `PORT`. The client should point `VITE_API_URL` at the deployed API origin ending in `/api`.
+The repository includes `render.yaml` for a Render Blueprint deployment. Configure `MONGODB_URI`, `CLIENT_URL`, and `GOOGLE_CLIENT_ID` in Render; use a strong `JWT_SECRET` of at least 32 characters. Render supplies `PORT`. Set the client’s `VITE_API_URL` to the deployed API origin ending in `/api`.
 
-## Related project
+In production, session cookies use `HttpOnly`, `Secure`, and `SameSite=None` to support the separately hosted client and API. State-changing requests are accepted only from the configured client origin.
 
-- Client repository: [studiospace-client](https://github.com/kaziaurpon/studiospace-client)
-- Live client: [studiospace-client-seven.vercel.app](https://studiospace-client-seven.vercel.app)
+## Related links
+
+- [StudioSpace client repository](https://github.com/kaziaurpon/studiospace-client)
+- [Live StudioSpace website](https://studiospace-client-seven.vercel.app)
